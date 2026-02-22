@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Modern Stopwatch</title>
+
+<style>
+:root{
+  --bg:#0f172a;
+  --card:#1e293b;
+  --text:white;
+}
+.light{
+  --bg:#f1f5f9;
+  --card:white;
+  --text:#0f172a;
+}
+body{
+  margin:0;
+  font-family:Segoe UI, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  transition:.3s;
+}
+.container{
+  background:var(--card);
+  padding:30px;
+  border-radius:14px;
+  width:360px;
+  text-align:center;
+  box-shadow:0 10px 25px rgba(0,0,0,.3);
+}
+#display{
+  font-size:38px;
+  letter-spacing:2px;
+  margin:20px 0;
+}
+button{
+  margin:6px;
+  padding:10px 16px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+}
+.start{background:#22c55e;color:white;}
+.pause{background:#f59e0b;color:white;}
+.reset{background:#ef4444;color:white;}
+.lap{background:#3b82f6;color:white;}
+.theme{background:#64748b;color:white;}
+ul{
+  max-height:140px;
+  overflow:auto;
+  text-align:left;
+  padding-left:20px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>⏱ Modern Stopwatch</h2>
+  <div id="display">00:00:00.000</div>
+
+  <button class="start" onclick="start()">Start</button>
+  <button class="pause" onclick="pause()">Pause</button>
+  <button class="reset" onclick="reset()">Reset</button>
+  <button class="lap" onclick="lap()">Lap</button>
+  <button class="theme" onclick="toggleTheme()">Theme</button>
+
+  <ul id="laps"></ul>
+</div>
+
+<script>
+let startTime=0;
+let elapsed=0;
+let timer=null;
+
+function format(ms){
+  let milli = ms % 1000;
+  let totalSec = Math.floor(ms/1000);
+  let sec = totalSec % 60;
+  let min = Math.floor(totalSec/60)%60;
+  let hr = Math.floor(totalSec/3600);
+
+  return String(hr).padStart(2,'0')+":"
+      + String(min).padStart(2,'0')+":"
+      + String(sec).padStart(2,'0')+"."
+      + String(milli).padStart(3,'0');
+}
+
+function update(){
+  elapsed = Date.now() - startTime;
+  document.getElementById("display").innerText=format(elapsed);
+}
+
+function start(){
+  if(timer) return;
+  startTime = Date.now() - elapsed;
+  timer = setInterval(update,10);
+}
+
+function pause(){
+  clearInterval(timer);
+  timer=null;
+}
+
+function reset(){
+  pause();
+  elapsed=0;
+  document.getElementById("display").innerText="00:00:00.000";
+  document.getElementById("laps").innerHTML="";
+}
+
+function lap(){
+  if(elapsed===0) return;
+  let li=document.createElement("li");
+  li.textContent="Lap: "+format(elapsed);
+  document.getElementById("laps").appendChild(li);
+}
+
+function toggleTheme(){
+  document.body.classList.toggle("light");
+}
+
+/* 🔥 Keyboard Shortcuts
+   S = Start
+   P = Pause
+   R = Reset
+   L = Lap
+*/
+document.addEventListener("keydown",(e)=>{
+  if(e.key==="s") start();
+  if(e.key==="p") pause();
+  if(e.key==="r") reset();
+  if(e.key==="l") lap();
+});
+</script>
+
+</body>
+</html>
